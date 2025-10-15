@@ -11,15 +11,13 @@ from tabularbench.datasets.dataset import (
     Dataset,
     DefaultIndexSorter,
     DefaultSplitter,
-    DownloadFileDataSource,
+    HuggingFaceDataSource,
     Task,
 )
 
 
 def get_relation_constraints() -> List[BaseRelationConstraint]:
-    def apply_if_a_supp_zero_than_b_supp_zero(
-        a: Feature, b: Feature
-    ) -> OrConstraint:
+    def apply_if_a_supp_zero_than_b_supp_zero(a: Feature, b: Feature) -> OrConstraint:
         return (Constant(0) <= a) | (Constant(0) < b)
 
     g1 = Feature(1) <= Feature(0)
@@ -91,19 +89,17 @@ def get_relation_constraints() -> List[BaseRelationConstraint]:
 
 
 def create_dataset() -> Dataset:
-    data_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "Eb8cqp1UNTBOmpqPb3-Ajr4BJGvyjqvvaYP5M0dDM7k4pg?download=1",
-        file_data_source=CsvDataSource(path="./data/datasets/url/url.csv"),
+    data_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="url/url.csv",
+        file_data_source=CsvDataSource(path=""),
     )
-    metadata_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "EeWjdreWcLRPiOo067kzmf0Bzmli13-nsCKsv6-IBXAAYg?download=1",
-        file_data_source=CsvDataSource(
-            path="./data/datasets/url/url_metadata.csv"
-        ),
+    metadata_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="url/url_metadata.csv",
+        file_data_source=CsvDataSource(path=""),
     )
     tasks = [
         Task(

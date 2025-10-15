@@ -18,6 +18,7 @@ from tabularbench.constraints.constraints import (
 )
 from tabularbench.constraints.constraints_checker import ConstraintChecker
 from tabularbench.constraints.relation_constraint import BaseRelationConstraint
+from huggingface_hub import hf_hub_download
 
 
 class SplitterMissingError(Exception):
@@ -65,9 +66,7 @@ class SQLDataSource(DataSource):
         self,
         connection_string: str,
         query: str,
-        preprocess_fun: Optional[
-            Callable[[pd.DataFrame], pd.DataFrame]
-        ] = None,
+        preprocess_fun: Optional[Callable[[pd.DataFrame], pd.DataFrame]] = None,
     ) -> None:
         self.connection_string = connection_string
         self.query = query
@@ -101,6 +100,27 @@ class DownloadFileDataSource(DataSource):
         return self.file_data_source.load_data()
 
 
+class HuggingFaceDataSource(DataSource):
+    def __init__(
+        self,
+        repo_type: str,
+        repo_id: str,
+        filename: str,
+        file_data_source: FileDataSource,
+    ) -> None:
+        self.repo_type = repo_type
+        self.repo_id = repo_id
+        self.filename = filename
+        self.file_data_source = file_data_source
+
+    def load_data(self) -> pd.DataFrame:
+        path = hf_hub_download(repo_id=self.repo_id, filename=self.filename, repo_type=self.repo_type)
+
+        path = self.file_data_source.path = path
+
+        return self.file_data_source.load_data()
+
+
 class TaskProcessor(ABC):
     @abc.abstractmethod
     def transform(self, task_data: pd.Series) -> pd.Series:
@@ -123,16 +143,12 @@ class Task:
 
 class Sorter(ABC):
     @abc.abstractmethod
-    def get_index(
-        self, data: pd.DataFrame
-    ) -> Union[pd.Series, npt.NDArray[np.int_]]:
+    def get_index(self, data: pd.DataFrame) -> Union[pd.Series, npt.NDArray[np.int_]]:
         pass
 
 
 class DefaultIndexSorter(Sorter):
-    def get_index(
-        self, data: pd.DataFrame
-    ) -> Union[pd.Series, npt.NDArray[np.int_]]:
+    def get_index(self, data: pd.DataFrame) -> Union[pd.Series, npt.NDArray[np.int_]]:
         return np.arange(len(data))
 
 
@@ -140,9 +156,7 @@ class DateSorter(Sorter):
     def __init__(self, date_col: str) -> None:
         self.date_col = date_col
 
-    def get_index(
-        self, data: pd.DataFrame
-    ) -> Union[pd.Series, npt.NDArray[np.int_]]:
+    def get_index(self, data: pd.DataFrame) -> Union[pd.Series, npt.NDArray[np.int_]]:
         return pd.to_datetime(data[self.date_col])
 
 
@@ -190,7 +204,6 @@ class Dataset:
         splitter: Union[Splitter, None],
         relation_constraints: List[BaseRelationConstraint] = None,
     ):
-
         self.name = name
         self.data_source = data_source
         self.metadata_source = metadata_source
@@ -229,7 +242,6 @@ class Dataset:
         return metadata
 
     def get_ddpm_transformations(self):
-
         return {
             "seed": 0,
             "normalization": "quantile",
@@ -242,9 +254,7 @@ class Dataset:
 
     def get_x_y(
         self, keep_date: bool = False
-    ) -> Tuple[
-        pd.DataFrame, Union[npt.NDArray[np.int_], npt.NDArray[np.float_]]
-    ]:
+    ) -> Tuple[pd.DataFrame, Union[npt.NDArray[np.int_], npt.NDArray[np.float_]]]:
         data = self.get_data()
         y = []
         for task in self.tasks:
@@ -263,7 +273,9 @@ class Dataset:
 
         return data, y_np
 
-    def get_x_y_t(self, keep_date: bool = False) -> Tuple[
+    def get_x_y_t(
+        self, keep_date: bool = False
+    ) -> Tuple[
         pd.DataFrame,
         Union[npt.NDArray[np.int_], npt.NDArray[np.float_]],
         Union[pd.Series, npt.NDArray[np.int_]],
@@ -285,6 +297,4 @@ class Dataset:
         relation_constraints = self.relation_constraints
         if relation_constraints is None:
             relation_constraints = []
-        return get_constraints_from_metadata(
-            metadata, relation_constraints, col_filter
-        )
+        return get_constraints_from_metadata(metadata, relation_constraints, col_filter)

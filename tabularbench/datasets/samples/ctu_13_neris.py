@@ -13,7 +13,7 @@ from tabularbench.datasets.dataset import (
     Dataset,
     DataSource,
     DefaultIndexSorter,
-    DownloadFileDataSource,
+    HuggingFaceDataSource,
     Splitter,
     Task,
 )
@@ -122,21 +122,17 @@ def get_relation_constraints(
 
 
 def create_dataset() -> Dataset:
-    data_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "Ed5Wox3GpUtChu5ZYzMfACEB3PDRE3fMloUw04MSNiAkTQ?download=1",
-        file_data_source=CsvDataSource(
-            path="./data/datasets/ctu_13_neris/ctu_13_neris.csv"
-        ),
+    data_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="ctu_13_neris/ctu_13_neris.csv",
+        file_data_source=CsvDataSource(path=""),
     )
-    metadata_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "ESz5WJPXeF1Fv_i3vVk9cY8B-fqbrYuaaUy_e_iypmZFbQ?download=1",
-        file_data_source=CsvDataSource(
-            path="./data/datasets/ctu_13_neris/ctu_13_neris_metadata.csv"
-        ),
+    metadata_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="ctu_13_neris/ctu_13_neris_metadata.csv",
+        file_data_source=CsvDataSource(path=""),
     )
     tasks = [
         Task(

@@ -13,7 +13,7 @@ from tabularbench.datasets.dataset import (
     Dataset,
     DataSource,
     DefaultIndexSorter,
-    DownloadFileDataSource,
+    HuggingFaceDataSource,
     Splitter,
     Task,
 )
@@ -55,20 +55,17 @@ def get_relation_constraints(
 
 
 def create_dataset() -> Dataset:
-    data_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "EUYrYidMx1dMmqKEwtDv0ZgBLSPi7gVkkxs665NmqYBgOg?download=1",
-        file_data_source=CsvDataSource(path="./data/datasets/wids/wids.csv"),
+    data_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="wids/wids.csv",
+        file_data_source=CsvDataSource(path=""),
     )
-
-    metadata_source = DownloadFileDataSource(
-        url="https://uniluxembourg-my.sharepoint.com/:x:/g/personal/"
-        "thibault_simonetto_uni_lu/"
-        "EX1GyuM1D-FMndupFvqCnIwBsj_vJSstdRZy_oo8hXbm4w?download=1",
-        file_data_source=CsvDataSource(
-            path="./data/datasets/wids/wids_metadata.csv"
-        ),
+    metadata_source = HuggingFaceDataSource(
+        repo_type="dataset",
+        repo_id="serval-uni-lu/tabularbench",
+        filename="wids/wids_metadata.csv",
+        file_data_source=CsvDataSource(path=""),
     )
     tasks = [
         Task(
