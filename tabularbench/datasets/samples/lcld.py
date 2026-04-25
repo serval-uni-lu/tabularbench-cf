@@ -145,7 +145,7 @@ def create_dataset(
     data_source = HuggingFaceDataSource(
         repo_type="dataset",
         repo_id="serval-uni-lu/tabularbench",
-        filename="cld_v2/lcld_v2.csv",
+        filename="lcld_v2/lcld_v2.csv",
         file_data_source=CsvDataSource(path=""),
     )
     metadata_source = HuggingFaceDataSource(
