@@ -254,7 +254,7 @@ class Dataset:
 
     def get_x_y(
         self, keep_date: bool = False
-    ) -> Tuple[pd.DataFrame, Union[npt.NDArray[np.int_], npt.NDArray[np.float_]]]:
+    ) -> Tuple[pd.DataFrame, Union[npt.NDArray[np.int_], npt.NDArray[np.float64]]]:
         data = self.get_data()
         y = []
         for task in self.tasks:
@@ -277,7 +277,7 @@ class Dataset:
         self, keep_date: bool = False
     ) -> Tuple[
         pd.DataFrame,
-        Union[npt.NDArray[np.int_], npt.NDArray[np.float_]],
+        Union[npt.NDArray[np.int_], npt.NDArray[np.float64]],
         Union[pd.Series, npt.NDArray[np.int_]],
     ]:
         x, y = self.get_x_y(keep_date=True)

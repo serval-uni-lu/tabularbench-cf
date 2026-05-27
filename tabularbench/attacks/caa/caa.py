@@ -7,8 +7,12 @@ from torchattacks.attack import Attack
 from torchattacks.wrappers.multiattack import MultiAttack
 
 from tabularbench.attacks.capgd.capgd import CAPGD
-from tabularbench.attacks.moeva.moeva import Moeva2
 from tabularbench.attacks.objective_calculator import ObjectiveCalculator
+
+try:
+    from tabularbench.attacks.moeva.moeva import Moeva2
+except ImportError:
+    Moeva2 = None
 from tabularbench.constraints.constraints import Constraints
 from tabularbench.constraints.constraints_backend_executor import (
     ConstraintsExecutor,
@@ -64,13 +68,7 @@ class ConstrainedMultiAttack(MultiAttack):
 
         ids = []
         for attack in self.attacks:
-            if isinstance(attack, Moeva2):
-                if hasattr(attack.model, "__self__"):
-                    ids.append(id(attack.model.__self__.wrapper_model))
-                else:
-                    ids.append(id(attack.model.wrapper_model))
-            else:
-                ids.append(id(attack.model))
+            ids.append(id(attack.model))
         if len(set(ids)) != 1:
             raise ValueError(
                 "At least one of attacks is referencing a different model."
@@ -327,18 +325,6 @@ class ConstrainedAutoAttack(Attack):
                         eps_margin=eps_margin,
                         best_restart=False,
                         steps=self.steps,
-                    ),
-                    Moeva2(
-                        model_objective,
-                        constraints=constraints,
-                        eps=eps,
-                        norm=norm,
-                        seed=self.get_seed(),
-                        verbose=verbose,
-                        fun_distance_preprocess=scaler.transform,
-                        n_jobs=n_jobs,
-                        n_gen=self.n_gen,
-                        n_offsprings=self.n_offsprings,
                     ),
                 ],
             )

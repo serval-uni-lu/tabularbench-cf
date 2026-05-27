@@ -178,11 +178,13 @@ class ScalerData:
             "num_idx": self.num_idx,
         }
 
-        json.dump(out, open(path, "w"))
+        with open(path, "w") as f:
+            json.dump(out, f)
 
     @staticmethod
     def load(path: str) -> ScalerData:
-        data = json.load(open(path, "r"))
+        with open(path, "r") as f:
+            data = json.load(f)
         return ScalerData(
             x_min=(
                 torch.tensor(data["x_min"])
@@ -300,11 +302,11 @@ class TabScaler:
 
         if self.num_scaler == "min_max":
             self.x_min = torch.tensor(
-                metadata["min"].values.astype(np.float_)[self.num_idx],
+                metadata["min"].values.astype(np.float64)[self.num_idx],
                 dtype=torch.float,
             )
             self.x_max = torch.tensor(
-                metadata["max"].values.astype(np.float_)[self.num_idx],
+                metadata["max"].values.astype(np.float64)[self.num_idx],
                 dtype=torch.float,
             )
             if self.x_min is None or self.x_max is None:
@@ -315,11 +317,11 @@ class TabScaler:
 
         elif self.num_scaler == "standard":
             self.mean = torch.tensor(
-                metadata["mean"].values.astype(np.float_)[self.num_idx],
+                metadata["mean"].values.astype(np.float64)[self.num_idx],
                 dtype=torch.float,
             )
             self.std = torch.tensor(
-                metadata["std"].values.astype(np.float_)[self.num_idx],
+                metadata["std"].values.astype(np.float64)[self.num_idx],
                 dtype=torch.float,
             )
 
