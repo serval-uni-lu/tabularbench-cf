@@ -165,3 +165,6 @@ out/
 
 website/_site
 website/.jekyll-cache
+
+#uv
+uv.lock

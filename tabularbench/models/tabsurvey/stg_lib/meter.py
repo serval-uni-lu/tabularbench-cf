@@ -2,8 +2,6 @@ import collections
 import itertools
 import json
 
-import six
-
 
 def map_exec(func, *iterables):
     return list(map(func, *iterables))
@@ -106,7 +104,7 @@ class GroupMeters(object):
             f.write("\n")
 
     def _canonize_values(self, values):
-        if isinstance(values, six.string_types):
+        if isinstance(values, str):
             assert values in ("avg", "val", "sum")
             meters_kv = getattr(self, values)
         else:
@@ -120,7 +118,7 @@ class JsonObjectEncoder(json.JSONEncoder):
     def default(self, obj):
         if hasattr(obj, "__jsonify__"):
             json_object = obj.__jsonify__()
-            if isinstance(json_object, six.string_types):
+            if isinstance(json_object, str):
                 return json_object
             return self.encode(json_object)
         else:

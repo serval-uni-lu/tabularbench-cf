@@ -19,8 +19,8 @@ class Model(ABC):
         self.model: Optional[Any] = None
 
     def predict(
-        self, x: npt.NDArray[np.float_]
-    ) -> Union[npt.NDArray[np.int_], npt.NDArray[np.float_]]:
+        self, x: npt.NDArray[np.float64]
+    ) -> Union[npt.NDArray[np.int_], npt.NDArray[np.float64]]:
         """
         Returns the regression value or the concrete classes of binary /
         multi-class-classification tasks.
@@ -44,8 +44,8 @@ class Model(ABC):
         return predictions
 
     def predict_proba(
-        self, x: npt.NDArray[np.float_]
-    ) -> npt.NDArray[np.float_]:
+        self, x: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         """
         Only implemented for binary / multi-class-classification tasks.
         Returns the probability distribution over the classes C.

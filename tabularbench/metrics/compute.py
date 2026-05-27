@@ -12,7 +12,7 @@ from tabularbench.utils.typing import NDFloat, NDNumber
 
 def default_model_prediction(model: Model, x: NDFloat) -> NDFloat:
     if model.objective in ["regression"]:
-        return model.predict(x).astype(np.float_)
+        return model.predict(x).astype(np.float64)
     if model.objective in ["binary", "classification"]:
         return model.predict_proba(x)
     raise NotImplementedError

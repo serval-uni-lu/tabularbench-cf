@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import fnmatch
 import re
 
@@ -12,7 +12,7 @@ class NameMatcher(object):
         elif isinstance(rules, dict):
             self._rules = list(rules.items())
         else:
-            assert isinstance(rules, collections.Iterable)
+            assert isinstance(rules, collections.abc.Iterable)
             self._rules = list(rules)
 
         self._map = {}
