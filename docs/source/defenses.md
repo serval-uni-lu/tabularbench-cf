@@ -1,3 +1,0 @@
-# Defenses
-
-Documentation in progress.
