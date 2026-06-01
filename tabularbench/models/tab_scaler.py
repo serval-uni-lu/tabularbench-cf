@@ -282,7 +282,7 @@ class TabScaler:
 
         # Categorical features
         if len(self.cat_idx) > 0:
-            ohe = OneHotEncoder(sparse=False)
+            ohe = OneHotEncoder(sparse_output=False)
             ohe.fit(x.numpy()[:, self.cat_idx])
             self.categories = ohe.categories_
 
