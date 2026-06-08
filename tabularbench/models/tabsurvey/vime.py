@@ -522,27 +522,38 @@ class VIME(BaseModelTorch):
 
     @classmethod
     def load_class(cls, path: str, **kwargs: Dict[str, Any]) -> BaseModelTorch:
+        args_path = os.path.join(path, "args.json")
+        weights_path = os.path.join(path, "weights.pt")
+        semi_weights_path = os.path.join(path, "semi_weights.pt")
+        scaler_path = os.path.join(path, "scaler.json")
 
-        args_path = f"{path}/args.json"
-        weigths_path = f"{path}/weights.pt"
-        semi_weights_path = f"{path}/semi_weights.pt"
-        scaler_path = f"{path}/scaler.json"
-
-        if ("scaler" not in kwargs) or (kwargs["scaler"] is None):
+        # The updated logic: Check if scaler is None OR if it is an empty/unfitted instance
+        scaler = kwargs.get("scaler")
+        device = kwargs.get("device", "cpu")
+        
+        # We check if it's None OR if it hasn't been fitted yet (checking if it has internal data)
+        if (scaler is None) or (not hasattr(scaler, "is_fitted") or not scaler.is_fitted):
             if os.path.exists(scaler_path):
+                print(f"Loading and fitting scaler from {scaler_path}...")
                 scaler = TabScaler()
                 scaler_data = ScalerData.load(scaler_path)
                 scaler.fit_scaler_data(scaler_data)
                 kwargs["scaler"] = scaler
+            else:
+                raise FileNotFoundError(f"Scaler data not found at {scaler_path}, and no valid scaler provided in kwargs.")
 
         load_kwargs = load_json(args_path)
         args = {**load_kwargs, **kwargs}
+        
+        # Now the model receives a fully fitted/ready-to-use scaler
         model = cls(**args)
+        
+        # Load state dict
         model.model_self.load_state_dict(
-            torch.load(weigths_path, map_location=torch.device("cpu"))
+            torch.load(weigths_path, map_location=torch.device(device))
         )
         model.model_semi.load_state_dict(
-            torch.load(semi_weights_path, map_location=torch.device("cpu"))
+            torch.load(semi_weights_path, map_location=torch.device(device))
         )
 
         return model

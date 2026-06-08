@@ -175,7 +175,7 @@ class TORCHRLN(BaseModelTorch):
         custom_train_dataloader=None,
         custom_val_dataloader=None,
         scaler=None,
-    ):
+        ):
         # if reset_weight:
         #     self.reset_all_weights()
 

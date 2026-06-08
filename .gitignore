@@ -168,3 +168,11 @@ website/.jekyll-cache
 
 #uv
 uv.lock
+
+# Huggingface
+HF_TOKEN
+
+# Notebooks
+notebooks/
+
+# Data
